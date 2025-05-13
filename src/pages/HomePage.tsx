@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { categories } from '../data/categories';
 import { quizzes } from '../data/quizzes';
 import Header from '../components/layout/Header';

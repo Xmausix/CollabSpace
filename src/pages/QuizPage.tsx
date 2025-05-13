@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { quizzes } from '../data/quizzes';
 import { categories } from '../data/categories';
@@ -53,7 +53,7 @@ const QuizPage = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Quiz Not Found</h2>
           <p className="text-gray-600 mb-6">The quiz you're looking for does not exist.</p>
           <Link
-            to="/"
+            to="/quiz"
             className="inline-block bg-violet-600 text-white px-4 py-2 rounded-lg"
           >
             Back to Home

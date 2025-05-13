@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Quiz } from '../../types';
 import Button from '../ui/Button';
-import { Award, Clock, Share2, RotateCcw, Home } from 'lucide-react';
+import { Award, Share2, RotateCcw, Home, Twitter, Facebook, Link as LinkIcon } from 'lucide-react';
 
 interface QuizResultProps {
   quiz: Quiz;
@@ -21,7 +21,7 @@ const QuizResult = ({
   timeTaken,
   onRetry
 }: QuizResultProps) => {
-  // Convert time taken from seconds to minutes and seconds
+  const navigate = useNavigate();
   const minutes = Math.floor(timeTaken / 60);
   const seconds = timeTaken % 60;
   
@@ -41,6 +41,41 @@ const QuizResult = ({
     if (score >= 70) return "text-blue-500";
     if (score >= 50) return "text-yellow-500";
     return "text-red-500";
+  };
+
+  const shareText = `I scored ${score}% on the ${quiz.title} quiz! Can you beat my score?`;
+  const shareUrl = window.location.href;
+
+  const handleShare = async (platform?: string) => {
+    if (navigator.share && !platform) {
+      try {
+        await navigator.share({
+          title: 'Quiz Result',
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      let shareLink = '';
+      switch (platform) {
+        case 'twitter':
+          shareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+          break;
+        case 'facebook':
+          shareLink = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+          break;
+        default:
+          // Copy to clipboard
+          navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+          alert('Link copied to clipboard!');
+          return;
+      }
+      if (shareLink) {
+        window.open(shareLink, '_blank', 'width=600,height=400');
+      }
+    }
   };
   
   return (
@@ -102,6 +137,41 @@ const QuizResult = ({
           </div>
         </div>
       </div>
+
+      <div className="border-t border-gray-200 pt-6 mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Share Your Result</h3>
+        <div className="flex flex-wrap gap-3 mb-6">
+          <Button
+            variant="outline"
+            className="flex-1"
+            icon={<Twitter size={16} />}
+            iconPosition="left"
+            onClick={() => handleShare('twitter')}
+          >
+            Twitter
+          </Button>
+          
+          <Button
+            variant="outline"
+            className="flex-1"
+            icon={<Facebook size={16} />}
+            iconPosition="left"
+            onClick={() => handleShare('facebook')}
+          >
+            Facebook
+          </Button>
+          
+          <Button
+            variant="outline"
+            className="flex-1"
+            icon={<LinkIcon size={16} />}
+            iconPosition="left"
+            onClick={() => handleShare()}
+          >
+            Copy Link
+          </Button>
+        </div>
+      </div>
       
       <div className="flex flex-wrap gap-3">
         <Button
@@ -115,24 +185,14 @@ const QuizResult = ({
         </Button>
         
         <Button
-          variant="outline"
+          variant="ghost"
           className="flex-1"
-          icon={<Share2 size={16} />}
+          icon={<Home size={16} />}
           iconPosition="left"
+          onClick={() => navigate('/')}
         >
-          Share Result
+          Home
         </Button>
-        
-        <Link to="/" className="flex-1">
-          <Button
-            variant="ghost"
-            className="w-full"
-            icon={<Home size={16} />}
-            iconPosition="left"
-          >
-            Home
-          </Button>
-        </Link>
       </div>
     </div>
   );

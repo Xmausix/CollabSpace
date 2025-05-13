@@ -32,7 +32,7 @@ const HeroSection = () => {
               <Link to="/categories">
                 <Button 
                   size="lg" 
-                  className="bg-white text-violet-700 hover:bg-violet-50 w-full sm:w-auto"
+                  className="bg text-violet-700 hover:bg-violet-50 w-full sm:w-auto"
                   icon={<ArrowRight />}
                   iconPosition="right"
                 >

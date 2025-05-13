@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useParams } from 'react-router-dom';
 import { categories } from '../data/categories';
 import { quizzes } from '../data/quizzes';

@@ -18,24 +18,29 @@ const QuizQuestion = ({
 }: QuizQuestionProps) => {
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [answered, setAnswered] = useState(false);
   
   const isCorrect = selectedOptionId === question.correctOptionId;
   
   const handleSelectOption = (optionId: string) => {
-    if (showResult) return;
+    if (answered) return;
     setSelectedOptionId(optionId);
   };
   
   const handleCheckAnswer = () => {
+    if (answered) return;
     setShowResult(true);
+    setAnswered(true);
     setTimeout(() => {
       onAnswer(isCorrect);
+      setSelectedOptionId(null);
+      setShowResult(false);
+      setAnswered(false);
     }, 1500);
   };
   
   return (
     <div className="bg-white rounded-xl shadow-sm p-6 md:p-8 max-w-3xl mx-auto">
-      {/* Progress bar */}
       <div className="w-full bg-gray-100 rounded-full h-2.5 mb-6">
         <div 
           className="bg-violet-600 h-2.5 rounded-full transition-all duration-500"
@@ -114,14 +119,19 @@ const QuizQuestion = ({
       <div className="flex justify-between">
         <Button 
           variant="outline"
-          disabled={showResult}
-          onClick={() => onAnswer(false)}
+          disabled={answered}
+          onClick={() => {
+            if (!answered) {
+              onAnswer(false);
+              setAnswered(true);
+            }
+          }}
         >
           Skip
         </Button>
         
         <Button 
-          disabled={!selectedOptionId || showResult}
+          disabled={!selectedOptionId || answered}
           onClick={handleCheckAnswer}
           icon={showResult ? <ChevronRight /> : undefined}
           iconPosition="right"

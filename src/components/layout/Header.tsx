@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, BrainCircuit } from 'lucide-react';
 import Button from '../ui/Button';
 
@@ -7,6 +7,7 @@ const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   
   const toggleMenu = () => setIsOpen(!isOpen);
   
@@ -19,20 +20,26 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
   }, [location]);
   
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Categories', path: '/categories' },
+    { name: 'Categories', path: '/category' },
     { name: 'Discover', path: '/discover' },
     { name: 'About', path: '/about' }
   ];
   
+  const handleNavClick = (path: string) => {
+    navigate(path);
+  };
+  
   const isActive = (path: string) => {
-    return location.pathname === path;
+    if (path === '/') {
+      return location.pathname === '/';
+    }
+    return location.pathname.startsWith(path);
   };
   
   return (
@@ -43,18 +50,16 @@ const Header = () => {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link to="/" className="flex items-center">
             <BrainCircuit className="h-8 w-8 text-violet-600" />
             <span className="ml-2 text-xl font-bold text-gray-900">CollabSpace</span>
           </Link>
           
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <Link
+              <button
                 key={link.name}
-                to={link.path}
+                onClick={() => handleNavClick(link.path)}
                 className={`text-sm font-medium transition-colors ${
                   isActive(link.path)
                     ? 'text-violet-600'
@@ -62,11 +67,10 @@ const Header = () => {
                 }`}
               >
                 {link.name}
-              </Link>
+              </button>
             ))}
           </nav>
           
-          {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -79,12 +83,12 @@ const Header = () => {
             <Button 
               size="sm"
               variant="primary"
+              onClick={() => handleNavClick('/')}
             >
               Sign In
             </Button>
           </div>
           
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
@@ -101,7 +105,6 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Mobile Menu */}
       <div 
         className={`md:hidden ${isOpen ? 'block' : 'hidden'} bg-white border-t`}
       >
@@ -116,21 +119,24 @@ const Header = () => {
           </div>
           
           {navLinks.map((link) => (
-            <Link
+            <button
               key={link.name}
-              to={link.path}
-              className={`block px-3 py-2 rounded-md text-base font-medium ${
+              onClick={() => handleNavClick(link.path)}
+              className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium ${
                 isActive(link.path)
                   ? 'bg-violet-50 text-violet-600'
                   : 'text-gray-700 hover:bg-gray-50 hover:text-violet-600'
               }`}
             >
               {link.name}
-            </Link>
+            </button>
           ))}
           
           <div className="px-3 py-2">
-            <Button fullWidth>
+            <Button 
+              fullWidth 
+              onClick={() => handleNavClick('/')}
+            >
               Sign In
             </Button>
           </div>
